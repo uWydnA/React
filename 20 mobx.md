@@ -51,3 +51,65 @@ const store = observable.map({
 //如果要观察复杂数据类型，需要用map方法
 ```
 
+
+
+## autorun
+
+```js
+import {autorun} from 'mobx'
+import store from '../../mobx/store'
+```
+
+```js
+autorun(()=>{
+	console.log(store.get())
+})
+```
+
+
+
+## 实例
+
+```js
+import { observable, autorun } from 'mobx';
+const value = observable.box(0);
+const number = observable.box(100);
+autorun(() => {
+	console.log(value.get());
+});
+value.set(1);
+value.set(2);
+number.set(101);
+//0,1,2。 // autorun 使用到才能被执行
+//只能是同步，异步需要处理
+//观察对象，通过map
+const map = observable.map({ key: "value"});
+//map.set("key", "new value");
+//map.get("key")
+//观察对象，不通过map
+const map = observable({ key: "value"});
+// map.key map.key="xiaoming"
+//观察数组
+const list = observable([1, 2, 4]);
+list[2] = 3;
+
+```
+
+
+
+## mobx取消绑定
+
+```js
+componentWillMount () {
+    this.cancel = autorun(()=>{
+		this.setState({
+            isShow:store.get('isShow')
+        })
+	})
+}
+componentWillUnMount () {
+    this.cancel()
+    //或者直接更改setState函数，这样就不会触发上一个组件销毁，但上一个组件中定义的autorun没销毁，导致进行setState操作，但上个组件已经销毁，因此会报一个warning：无法设置一个状态到unmount的组件
+}
+```
+
